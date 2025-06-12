@@ -1,0 +1,1 @@
+INSERT INTO member(name, email, password) VALUES ('드라고', 'yonghwa95@naver.com', 'FJwkemdaud1528!');
