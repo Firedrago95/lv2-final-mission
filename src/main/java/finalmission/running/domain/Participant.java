@@ -59,6 +59,10 @@ public class Participant {
         return this.runningSession.equals(runningSession);
     }
 
+    public boolean hasMember(Member findMember) {
+        return this.member.equals(findMember);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

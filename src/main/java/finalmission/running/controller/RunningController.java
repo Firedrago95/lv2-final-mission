@@ -42,4 +42,12 @@ public class RunningController {
     ) {
         return ResponseEntity.ok(runningService.searchAllSimpleInfos());
     }
+
+    @GetMapping("/runningSessions/{id}")
+    public ResponseEntity<ReservationResponse> searchInfos(
+        @LoginMember LoginInfo loginInfo,
+        @PathVariable("id") Long id
+    ) {
+        return ResponseEntity.ok(runningService.searchInfos(id, loginInfo));
+    }
 }

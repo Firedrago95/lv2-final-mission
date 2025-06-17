@@ -29,6 +29,9 @@ class RunningReservationServiceTest {
     private RunningReservationService runningReservationService;
 
     @Autowired
+    private ParticipantService participantService;
+
+    @Autowired
     private MemberRepository memberRepository;
 
     private ReservationRequest request;

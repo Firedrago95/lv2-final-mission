@@ -86,6 +86,12 @@ public class RunningSession {
         }
     }
 
+    public boolean isCreatorOrParticipants(Member findMember) {
+        return this.creator.equals(findMember)
+            || participants.stream()
+            .anyMatch(participant -> participant.hasMember(findMember));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

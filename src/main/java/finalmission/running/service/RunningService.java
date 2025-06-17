@@ -2,6 +2,7 @@ package finalmission.running.service;
 
 import finalmission.member.domain.Member;
 import finalmission.member.dto.response.LoginInfo;
+import finalmission.member.exception.UnauthorizedException;
 import finalmission.member.service.LoginService;
 import finalmission.running.domain.Participant;
 import finalmission.running.domain.RunningSession;
@@ -39,5 +40,18 @@ public class RunningService {
 
     public List<SessionSimpleResponse> searchAllSimpleInfos() {
         return runningReservationService.searchAllSimpleInfos();
+    }
+
+    public ReservationResponse searchInfos(Long id, LoginInfo loginInfo) {
+        RunningSession runningSession = runningReservationService.findRunningSession(id);
+        Member member = loginService.findMember(loginInfo.id());
+        validateCreatorOrParticipants(runningSession, member);
+        return ReservationResponse.from(runningSession);
+    }
+
+    private void validateCreatorOrParticipants(RunningSession runningSession, Member findMember) {
+        if (!runningSession.isCreatorOrParticipants(findMember)) {
+            throw new UnauthorizedException("세션 생성자와 참가자만 세션 정보를 열람할 수 있습니다.");
+        }
     }
 }
