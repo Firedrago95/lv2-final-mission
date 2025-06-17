@@ -71,4 +71,13 @@ public class RunningController {
         runningService.deleteSession(id, loginInfo);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/runningSession/{id}/participants")
+    public ResponseEntity<Void> cancelSessionJoin(
+        @LoginMember LoginInfo loginInfo,
+        @PathVariable("id") Long id
+    ) {
+        runningService.cancelSessionJoin(id, loginInfo);
+        return ResponseEntity.noContent().build();
+    }
 }

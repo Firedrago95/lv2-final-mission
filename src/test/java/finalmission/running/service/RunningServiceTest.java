@@ -5,6 +5,8 @@ import finalmission.member.domain.Role;
 import finalmission.member.dto.response.LoginInfo;
 import finalmission.member.exception.UnauthorizedException;
 import finalmission.member.repository.MemberRepository;
+import finalmission.running.domain.Participant;
+import finalmission.running.domain.RunningSession;
 import finalmission.running.dto.request.ReservationRequest;
 import finalmission.running.dto.request.UpdateRequest;
 import finalmission.running.dto.response.ReservationResponse;
@@ -34,6 +36,9 @@ class RunningServiceTest {
 
     @Autowired
     RunningReservationService runningReservationService;
+
+    @Autowired
+    ParticipantService participantService;
 
     private ReservationRequest request;
     private LoginInfo loginInfo;
@@ -110,7 +115,7 @@ class RunningServiceTest {
         // when & then
         assertThatThrownBy(() -> runningService.updateRunningTime(sessionId, updateRequest, otherLogin))
             .isInstanceOf(UnauthorizedException.class)
-            .hasMessage("세션 수정은 생성자만 가능합니다.");
+            .hasMessage("세션 수정/삭제는 생성자만 가능합니다.");
     }
 
     @Test
@@ -141,5 +146,39 @@ class RunningServiceTest {
         assertThatThrownBy(() -> runningService.deleteSession(sessionId, otherLogin))
             .isInstanceOf(UnauthorizedException.class)
             .hasMessage("세션 수정/삭제는 생성자만 가능합니다.");
+    }
+
+    @Test
+    void 참가자는_세션_참가를_취소할_수_있다() {
+        // given
+        ReservationResponse response = runningReservationService.createRunningReservation(request, loginInfo);
+        RunningSession runningSession = runningReservationService.findRunningSession(response.id());
+
+        Member newMember = memberRepository.save(Member.createWithoutId("참가자", "join@user.com", "pass", Role.USER));
+        participantService.createParticipant(Participant.createWithoutId(runningSession, newMember));
+
+        // when
+        LoginInfo participantInfo = new LoginInfo(newMember.getId(), newMember.getRole());
+        runningService.cancelSessionJoin(runningSession.getId(), participantInfo);
+
+        // then
+        assertThatThrownBy(() -> runningService.searchInfos(response.id(), participantInfo))
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("세션 생성자와 참가자만 세션 정보를 열람할 수 있습니다.");
+    }
+
+    @Test
+    void 참가자가_아닌_사용자가_참가_취소를_시도하면_예외가_발생한다() {
+        // given
+        ReservationResponse response = runningReservationService.createRunningReservation(request, loginInfo);
+        Long sessionId = response.id();
+
+        Member nonParticipant = memberRepository.save(Member.createWithoutId("비참가자", "nopart@user.com", "pass", Role.USER));
+        LoginInfo nonParticipantInfo = new LoginInfo(nonParticipant.getId(), nonParticipant.getRole());
+
+        // when & then
+        assertThatThrownBy(() -> runningService.cancelSessionJoin(sessionId, nonParticipantInfo))
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("세션 참가 취소는 참가자만 가능합니다.");
     }
 }

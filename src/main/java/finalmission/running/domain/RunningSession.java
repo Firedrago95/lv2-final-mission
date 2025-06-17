@@ -92,13 +92,25 @@ public class RunningSession {
     }
 
     public boolean isCreatorOrParticipants(Member findMember) {
-        return isCreator(findMember)
-            || participants.stream()
-            .anyMatch(participant -> participant.hasMember(findMember));
+        return isCreator(findMember) || isParticipant(findMember);
     }
 
     public boolean isCreator(Member member) {
         return this.creator.equals(member);
+    }
+
+    public boolean isParticipant(Member member) {
+        return participants.stream()
+            .anyMatch(participant -> participant.hasMember(member));
+    }
+
+    public void removeParticipant(Member member) {
+        Participant findParticipant = participants.stream()
+            .filter(participant -> participant.hasMember(member))
+            .findFirst()
+            .orElseThrow(() -> new ReservationException("삭제할 참가자를 찾을 수 없습니다."));
+
+        participants.remove(findParticipant);
     }
 
     public void setStartAt(LocalTime startAt) {

@@ -12,7 +12,9 @@ public interface RunningReservationRepository extends JpaRepository<RunningSessi
         SELECT DISTINCT rs
         FROM RunningSession rs
         JOIN FETCH rs.creator
-        LEFT JOIN FETCH rs.participants
+        LEFT JOIN FETCH rs.participants p
+        LEFT JOIN FETCH p.member
+        WHERE rs.id = :id
         """)
     Optional<RunningSession> findById(Long id);
 }

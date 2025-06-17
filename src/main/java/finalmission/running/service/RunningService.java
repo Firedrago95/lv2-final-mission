@@ -90,4 +90,19 @@ public class RunningService {
             throw new UnauthorizedException("세션 수정/삭제는 생성자만 가능합니다.");
         }
     }
+
+    @Transactional
+    public void cancelSessionJoin(Long id, LoginInfo loginInfo) {
+        RunningSession runningSession = runningReservationService.findRunningSession(id);
+        Member member = loginService.findMember(loginInfo.id());
+
+        validateParticipant(runningSession, member);
+        runningSession.removeParticipant(member);
+    }
+
+    private void validateParticipant(RunningSession runningSession, Member member) {
+        if (!runningSession.isParticipant(member)) {
+            throw new UnauthorizedException("세션 참가 취소는 참가자만 가능합니다.");
+        }
+    }
 }
