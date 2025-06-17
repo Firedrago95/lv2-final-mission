@@ -7,8 +7,11 @@ import finalmission.running.domain.Participant;
 import finalmission.running.domain.RunningSession;
 import finalmission.running.dto.request.ReservationRequest;
 import finalmission.running.dto.response.ReservationResponse;
+import finalmission.running.dto.response.SessionSimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +35,9 @@ public class RunningService {
 
         RunningSession resultSession = participant.getRunningSession();
         return ReservationResponse.from(resultSession);
+    }
+
+    public List<SessionSimpleResponse> searchAllSimpleInfos() {
+        return runningReservationService.searchAllSimpleInfos();
     }
 }

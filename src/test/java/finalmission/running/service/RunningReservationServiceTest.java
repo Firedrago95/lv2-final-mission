@@ -7,6 +7,7 @@ import finalmission.member.exception.UnauthorizedException;
 import finalmission.member.repository.MemberRepository;
 import finalmission.running.dto.request.ReservationRequest;
 import finalmission.running.dto.response.ReservationResponse;
+import finalmission.running.dto.response.SessionSimpleResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +73,19 @@ class RunningReservationServiceTest {
             .isInstanceOf(UnauthorizedException.class)
             .hasMessage("사용자를 찾을 수 없습니다.");
 
+    }
+
+    @Test
+    void 모든_세션을_조회할_수_있다() {
+        // given
+        runningReservationService.createRunningReservation(request, loginInfo);
+
+        // when
+        List<SessionSimpleResponse> result = runningReservationService.searchAllSimpleInfos();
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.getFirst().startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(result.getFirst().endTime()).isEqualTo(LocalTime.of(11, 0));
     }
 }

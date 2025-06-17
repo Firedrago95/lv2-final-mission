@@ -4,13 +4,17 @@ import finalmission.member.auth.argumentresolver.LoginMember;
 import finalmission.member.dto.response.LoginInfo;
 import finalmission.running.dto.request.ReservationRequest;
 import finalmission.running.dto.response.ReservationResponse;
+import finalmission.running.dto.response.SessionSimpleResponse;
 import finalmission.running.service.RunningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +34,12 @@ public class RunningController {
         @PathVariable("id") Long id,
         @LoginMember LoginInfo loginInfo) {
         return ResponseEntity.ok(runningService.joinRunningReservation(id, loginInfo));
+    }
+
+    @GetMapping("/runningSessions")
+    public ResponseEntity<List<SessionSimpleResponse>> searchSimpleInfos(
+        @LoginMember LoginInfo loginInfo
+    ) {
+        return ResponseEntity.ok(runningService.searchAllSimpleInfos());
     }
 }
