@@ -6,6 +6,7 @@ import finalmission.member.dto.response.LoginInfo;
 import finalmission.member.exception.UnauthorizedException;
 import finalmission.member.repository.MemberRepository;
 import finalmission.running.dto.request.ReservationRequest;
+import finalmission.running.dto.request.UpdateRequest;
 import finalmission.running.dto.response.ReservationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,5 +74,42 @@ class RunningServiceTest {
         assertThatThrownBy(() -> runningService.searchInfos(1L, wrongInfo))
             .isInstanceOf(UnauthorizedException.class)
             .hasMessage("세션 생성자와 참가자만 세션 정보를 열람할 수 있습니다.");
+    }
+
+    @Test
+    void 세션_시간을_수정할_수_있다() {
+        // given
+        ReservationResponse response = runningReservationService.createRunningReservation(request, loginInfo);
+        Long sessionId = response.id();
+
+        // when
+        LocalTime newStartAt = LocalTime.of(12, 0);
+        LocalTime newEndTime = LocalTime.of(13, 0);
+        UpdateRequest updateRequest = new UpdateRequest(newStartAt, newEndTime);
+        ReservationResponse updated = runningService.updateRunningTime(sessionId, updateRequest, loginInfo);
+
+        // then
+        assertThat(updated.startAt()).isEqualTo(newStartAt);
+        assertThat(updated.endTime()).isEqualTo(newEndTime);
+    }
+
+
+    @Test
+    void 세션_생성자가_아닌_사용자가_세션_시간을_수정하면_예외가_발생한다() {
+        // given
+        ReservationResponse response = runningReservationService.createRunningReservation(request, loginInfo);
+        Long sessionId = response.id();
+
+        Member other = memberRepository.save(Member.createWithoutId("다른사람", "other@email.com", "pass", Role.USER));
+        LoginInfo otherLogin = new LoginInfo(other.getId(), other.getRole());
+
+        LocalTime newStartAt = LocalTime.of(14, 0);
+        LocalTime newEndTime = LocalTime.of(15, 0);
+        UpdateRequest updateRequest = new UpdateRequest(newStartAt, newEndTime);
+
+        // when & then
+        assertThatThrownBy(() -> runningService.updateRunningTime(sessionId, updateRequest, otherLogin))
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("세션 수정은 생성자만 가능합니다.");
     }
 }

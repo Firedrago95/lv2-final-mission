@@ -87,9 +87,21 @@ public class RunningSession {
     }
 
     public boolean isCreatorOrParticipants(Member findMember) {
-        return this.creator.equals(findMember)
+        return isCreator(findMember)
             || participants.stream()
             .anyMatch(participant -> participant.hasMember(findMember));
+    }
+
+    public boolean isCreator(Member member) {
+        return this.creator.equals(member);
+    }
+
+    public void setStartAt(LocalTime startAt) {
+        this.startAt = startAt;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override

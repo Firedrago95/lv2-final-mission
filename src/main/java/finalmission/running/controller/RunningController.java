@@ -3,12 +3,14 @@ package finalmission.running.controller;
 import finalmission.member.auth.argumentresolver.LoginMember;
 import finalmission.member.dto.response.LoginInfo;
 import finalmission.running.dto.request.ReservationRequest;
+import finalmission.running.dto.request.UpdateRequest;
 import finalmission.running.dto.response.ReservationResponse;
 import finalmission.running.dto.response.SessionSimpleResponse;
 import finalmission.running.service.RunningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,5 +51,14 @@ public class RunningController {
         @PathVariable("id") Long id
     ) {
         return ResponseEntity.ok(runningService.searchInfos(id, loginInfo));
+    }
+
+    @PatchMapping("/runningSessions/{id}")
+    public ResponseEntity<ReservationResponse> updateRunningTime(
+        @LoginMember LoginInfo loginInfo,
+        @PathVariable("id") Long id,
+        @RequestBody UpdateRequest updateRequest
+    ) {
+        return ResponseEntity.ok(runningService.updateRunningTime(id, updateRequest, loginInfo));
     }
 }
