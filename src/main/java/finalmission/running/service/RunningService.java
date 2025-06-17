@@ -70,15 +70,24 @@ public class RunningService {
         return ReservationResponse.from(runningSession);
     }
 
-    private void validateCreator(RunningSession runningSession, Member member) {
-        if (!runningSession.isCreator(member)) {
-            throw new UnauthorizedException("세션 수정은 생성자만 가능합니다.");
-        }
-    }
-
     private void validateTime(UpdateRequest updateRequest) {
         if (updateRequest.startAt().isAfter(updateRequest.endTime())) {
             throw new ReservationException("시작시간과 종료시간을 다시 확인해주세요.");
+        }
+    }
+
+    @Transactional
+    public void deleteSession(Long id, LoginInfo loginInfo) {
+        RunningSession runningSession = runningReservationService.findRunningSession(id);
+        Member member = loginService.findMember(loginInfo.id());
+
+        validateCreator(runningSession, member);
+        runningReservationService.delete(runningSession);
+    }
+
+    private void validateCreator(RunningSession runningSession, Member member) {
+        if (!runningSession.isCreator(member)) {
+            throw new UnauthorizedException("세션 수정/삭제는 생성자만 가능합니다.");
         }
     }
 }

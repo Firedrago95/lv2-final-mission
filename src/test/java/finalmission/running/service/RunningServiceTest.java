@@ -112,4 +112,34 @@ class RunningServiceTest {
             .isInstanceOf(UnauthorizedException.class)
             .hasMessage("세션 수정은 생성자만 가능합니다.");
     }
+
+    @Test
+    void 세션을_정상적으로_삭제할_수_있다() {
+        // given
+        ReservationResponse response = runningReservationService.createRunningReservation(request, loginInfo);
+        Long sessionId = response.id();
+
+        // when
+        runningService.deleteSession(sessionId, loginInfo);
+
+        // then
+        assertThatThrownBy(() -> runningService.searchInfos(sessionId, loginInfo))
+            .isInstanceOf(finalmission.running.exception.ReservationException.class)
+            .hasMessage("러닝 세션을 찾을 수 없습니다.");
+    }
+
+    @Test
+    void 세션_생성자가_아닌_사용자가_삭제를_시도하면_예외가_발생한다() {
+        // given
+        ReservationResponse response = runningReservationService.createRunningReservation(request, loginInfo);
+        Long sessionId = response.id();
+
+        Member other = memberRepository.save(Member.createWithoutId("삭제안됨", "other@no.com", "1234", Role.USER));
+        LoginInfo otherLogin = new LoginInfo(other.getId(), other.getRole());
+
+        // when & then
+        assertThatThrownBy(() -> runningService.deleteSession(sessionId, otherLogin))
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("세션 수정/삭제는 생성자만 가능합니다.");
+    }
 }

@@ -9,6 +9,7 @@ import finalmission.running.dto.response.SessionSimpleResponse;
 import finalmission.running.service.RunningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,5 +61,14 @@ public class RunningController {
         @RequestBody UpdateRequest updateRequest
     ) {
         return ResponseEntity.ok(runningService.updateRunningTime(id, updateRequest, loginInfo));
+    }
+
+    @DeleteMapping("/runningSession/{id}")
+    public ResponseEntity<Void> deleteSession(
+        @LoginMember LoginInfo loginInfo,
+        @PathVariable("id") Long id
+    ) {
+        runningService.deleteSession(id, loginInfo);
+        return ResponseEntity.noContent().build();
     }
 }

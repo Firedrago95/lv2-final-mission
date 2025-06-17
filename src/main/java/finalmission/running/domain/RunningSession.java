@@ -2,6 +2,7 @@ package finalmission.running.domain;
 
 import finalmission.member.domain.Member;
 import finalmission.running.exception.ReservationException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +35,11 @@ public class RunningSession {
     @JoinColumn(name = "member_id")
     Member creator;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "runningSession")
+    @OneToMany(
+        fetch = FetchType.LAZY,
+        mappedBy = "runningSession",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
     List<Participant> participants = new ArrayList<>();
 
     LocalDate date;

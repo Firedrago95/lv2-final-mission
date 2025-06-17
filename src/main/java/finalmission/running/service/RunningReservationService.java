@@ -54,4 +54,9 @@ public class RunningReservationService {
                 session.getEndTime())
             ).toList();
     }
+
+    @Transactional
+    public void delete(RunningSession runningSession) {
+        reservationRepository.delete(runningSession);
+    }
 }
