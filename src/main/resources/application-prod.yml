@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: final
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+expiration:
+  time: 900000
+secret:
+  key: 92b355b62d70a2b55fbc27f11023a53203415d617022a4f35a4ca1a23679eafe17057643b931b43b72392674338c832bf0e2eed21cf8e80dec11db5543860f0f
+
+weather:
+  api:
+    key: sh5VgPyySA2eVYD8skgNYQ
