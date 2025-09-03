@@ -43,7 +43,7 @@ jobs:
           echo "Deploying version: $(cat image-tag.txt)"
 
       - name: Pull latest image
-        run: sudo docker pull firedrago/drago:${{ env.DEPLOY_TAG }}
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/drago:${{ env.DEPLOY_TAG }}
 
       - name: Deploy with Docker Compose
         env:
